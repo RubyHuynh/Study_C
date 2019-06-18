@@ -7,4 +7,10 @@
             </a>
         </p>
     </li>
+    <li> Linux programming with C </br>
+        <b>http://www.cse.hcmut.edu.vn/~hungnq/courses/nap/alp.pdf </b>
+        <ol>
+            <li> 2.1.3 Using getopt_longm, pg.29/269</li>
+        </ol>
+    </li>
 </ol>
