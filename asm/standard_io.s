@@ -23,6 +23,9 @@ main:
 	leaq	.LC0(%rip), %rdi
 	movl	$0, %eax
 	call	printf@PLT
+	movq	stdout(%rip), %rax
+	movq	%rax, %rdi
+	call	fflush@PLT
 	movq	stderr(%rip), %rax
 	movl	-4(%rbp), %edx
 	leaq	.LC0(%rip), %rsi
