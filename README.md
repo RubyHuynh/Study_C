@@ -29,7 +29,11 @@
                     The  program  is  terminated  if  the  expression  evaluates to false, after printing an error message containing the source file and line number and the text  of  the  expression.</li>
                 <li></li>
             </li>
-
         </ol>
     </li>
+    <li>Others </br>
+        <ol>
+            <li>@TODO inject asm in C program to pop out base address and change stack size <li>
+        </ol>
+    <li>
 </ol>
