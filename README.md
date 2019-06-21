@@ -23,6 +23,13 @@
                 UNIX I/O: open(), write(), .. </br>
                 C library's stream I/O functions: fopen(), fprintf(), .. </br>
             </li>
+            <li> 2.2 Coding defensively </br>
+                <li> Using standard C macro "assert", -DNDEBUG </br>
+                    Check against null pointers, for instance, as invalid function arguments </br>
+                    The  program  is  terminated  if  the  expression  evaluates to false, after printing an error message containing the source file and line number and the text  of  the  expression.</li>
+                <li></li>
+            </li>
+
         </ol>
     </li>
 </ol>

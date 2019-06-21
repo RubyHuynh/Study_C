@@ -53,3 +53,7 @@ preamble-090e9b.pch               temp.X8WUyO
 preamble-361c35.pch               vscode-extension-marketplace
 preamble-a0cba8.pch
  */
+
+ /*
+ Using tmpfile If  you  are  using  the  C  library  I/O  functions  and  don't  need  to  pass  the  temporary  file  to  another  program, you can use the tmpfile function. This creates and opens a temporary file, and returns a file pointer to it. The temporary file is already unlinked, as in the previous example, so it is deleted automatically when the file pointer is closed (with fclose) or when the program terminates. GNU/Linux   provides   several   other   functions   for   generating   temporary   files   and   temporary   filenames,  including  mktemp, tmpnam,  and  tempnam.  Don't  use  these  functions,  though,  because  they suffer from the reliability and security problems already mentioned
+  */
