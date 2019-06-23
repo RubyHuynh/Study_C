@@ -34,6 +34,7 @@
     <li>Others </br>
         <ol>
             <li>@TODO inject asm in C program to pop out base address and change stack size <li>
+            <li>@TODO how data is piled up in fd socket? how it knows read?</li>
         </ol>
     <li>
 </ol>
