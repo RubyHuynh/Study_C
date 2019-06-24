@@ -35,6 +35,8 @@
         <ol>
             <li>@TODO inject asm in C program to pop out base address and change stack size <li>
             <li>@TODO how data is piled up in fd socket? how it knows read?</li>
+            <li>sctp shutdown(fd), use mmap shared memory between forked process and its parent. </br>
+            fd must be in the list of /proc/pid_/fd --> out of range will return -1; <li>
         </ol>
     <li>
 </ol>
