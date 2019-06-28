@@ -1,4 +1,5 @@
 	.file	"sctp.c"
+	.text
 	.comm	shm,8,8
 	.globl	SCTP_PORT
 	.data
@@ -11,7 +12,7 @@ SCTP_PORT:
 	.globl	mm
 	.type	mm, @function
 mm:
-.LFB2:
+.LFB6:
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
@@ -20,21 +21,21 @@ mm:
 	.cfi_def_cfa_register 6
 	subq	$32, %rsp
 	movq	%rdi, -24(%rbp)
-	movl	$3, -4(%rbp)
-	movl	$33, -8(%rbp)
-	movl	-8(%rbp), %ecx
-	movl	-4(%rbp), %edx
+	movl	$3, -8(%rbp)
+	movl	$33, -4(%rbp)
+	movl	-4(%rbp), %ecx
+	movl	-8(%rbp), %edx
 	movq	-24(%rbp), %rax
 	movl	$0, %r9d
 	movl	$-1, %r8d
 	movq	%rax, %rsi
 	movl	$0, %edi
-	call	mmap
+	call	mmap@PLT
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE2:
+.LFE6:
 	.size	mm, .-mm
 	.section	.rodata
 .LC0:
@@ -49,7 +50,7 @@ mm:
 	.globl	child_process
 	.type	child_process, @function
 child_process:
-.LFB3:
+.LFB7:
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
@@ -58,78 +59,87 @@ child_process:
 	.cfi_def_cfa_register 6
 	subq	$160, %rsp
 	movl	%edi, -148(%rbp)
+	movq	%fs:40, %rax
+	movq	%rax, -8(%rbp)
+	xorl	%eax, %eax
 	movl	$2, %edi
-	call	sleep
+	call	sleep@PLT
 	movl	-148(%rbp), %edx
 	leaq	-112(%rbp), %rax
-	movl	$.LC0, %esi
+	leaq	.LC0(%rip), %rsi
 	movq	%rax, %rdi
 	movl	$0, %eax
-	call	sprintf
+	call	sprintf@PLT
 	movl	$132, %edx
 	movl	$1, %esi
 	movl	$2, %edi
-	call	socket
-	movl	%eax, -4(%rbp)
+	call	socket@PLT
+	movl	%eax, -136(%rbp)
 	movw	$2, -128(%rbp)
-	movl	$.LC1, %edi
-	call	inet_addr
+	leaq	.LC1(%rip), %rdi
+	call	inet_addr@PLT
 	movl	%eax, -124(%rbp)
 	movl	SCTP_PORT(%rip), %eax
 	movzwl	%ax, %eax
 	movl	%eax, %edi
-	call	htons
+	call	htons@PLT
 	movw	%ax, -126(%rbp)
 	leaq	-128(%rbp), %rcx
-	movl	-4(%rbp), %eax
+	movl	-136(%rbp), %eax
 	movl	$16, %edx
 	movq	%rcx, %rsi
 	movl	%eax, %edi
-	call	connect
-	movl	%eax, -8(%rbp)
+	call	connect@PLT
+	movl	%eax, -132(%rbp)
 	leaq	-112(%rbp), %rax
 	movq	%rax, %rsi
-	movl	$.LC2, %edi
+	leaq	.LC2(%rip), %rdi
 	movl	$0, %eax
-	call	printf
+	call	printf@PLT
 	leaq	-112(%rbp), %rcx
-	movl	-4(%rbp), %eax
+	movl	-136(%rbp), %eax
 	movl	$100, %edx
 	movq	%rcx, %rsi
 	movl	%eax, %edi
-	call	write
-	movl	%eax, -8(%rbp)
-	movl	-4(%rbp), %eax
+	call	write@PLT
+	movl	%eax, -132(%rbp)
+	movl	-136(%rbp), %eax
 	movl	%eax, %edi
-	call	close
+	call	close@PLT
 	cmpl	$5, -148(%rbp)
-	jne	.L5
-	movl	$10, -132(%rbp)
+	jne	.L6
+	movl	$10, -140(%rbp)
 	movq	shm(%rip), %rax
 	movl	(%rax), %edx
 	movq	shm(%rip), %rax
 	movq	%rax, %rsi
-	movl	$.LC3, %edi
+	leaq	.LC3(%rip), %rdi
 	movl	$0, %eax
-	call	printf
+	call	printf@PLT
 	movq	shm(%rip), %rax
 	movl	(%rax), %eax
 	movl	%eax, %edi
-	call	close
+	call	close@PLT
 	movq	shm(%rip), %rax
-	movl	-132(%rbp), %edx
+	movl	-140(%rbp), %edx
 	movl	%edx, (%rax)
-.L5:
+.L6:
 	nop
+	movq	-8(%rbp), %rax
+	xorq	%fs:40, %rax
+	je	.L5
+	call	__stack_chk_fail@PLT
+.L5:
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3:
+.LFE7:
 	.size	child_process, .-child_process
 	.section	.rodata
+	.align 8
 .LC4:
-	.string	"failure server socker %d \n "
+	.string	"failure server socker %d %s \n "
 	.align 8
 .LC5:
 	.string	"(%p %d) server_sock =%d pid=%d\n"
@@ -153,186 +163,204 @@ child_process:
 	.globl	main
 	.type	main, @function
 main:
-.LFB4:
+.LFB8:
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	subq	$1088, %rsp
-	movl	$5, -4(%rbp)
-	movl	$5, -8(%rbp)
-	movl	$0, -24(%rbp)
-	movl	$0, -12(%rbp)
-	movl	$0, -16(%rbp)
-	movl	$0, -20(%rbp)
+	pushq	%rbx
+	subq	$1096, %rsp
+	.cfi_offset 3, -24
+	movq	%fs:40, %rax
+	movq	%rax, -24(%rbp)
+	xorl	%eax, %eax
+	movl	$5, -1092(%rbp)
+	movl	$5, -1088(%rbp)
+	movl	$0, -1096(%rbp)
+	movl	$0, -1084(%rbp)
+	movl	$0, -1080(%rbp)
+	movl	$0, -1076(%rbp)
 	movl	$4, %edi
 	call	mm
 	movq	%rax, shm(%rip)
-	jmp	.L7
-.L9:
-	call	fork
+	jmp	.L8
+.L10:
+	call	fork@PLT
 	testl	%eax, %eax
-	jne	.L8
-	movl	-4(%rbp), %eax
+	jne	.L9
+	movl	-1092(%rbp), %eax
 	movl	%eax, %edi
 	call	child_process
 	movl	$0, %edi
-	call	exit
+	call	exit@PLT
+.L9:
+	subl	$1, -1092(%rbp)
 .L8:
-	subl	$1, -4(%rbp)
-.L7:
-	cmpl	$0, -4(%rbp)
-	jg	.L9
+	cmpl	$0, -1092(%rbp)
+	jg	.L10
 	movl	$132, %edx
 	movl	$1, %esi
 	movl	$2, %edi
-	call	socket
-	movl	%eax, -24(%rbp)
-	movl	-24(%rbp), %eax
+	call	socket@PLT
+	movl	%eax, -1096(%rbp)
+	movl	-1096(%rbp), %eax
 	cmpl	$-1, %eax
-	jne	.L10
-	call	__errno_location
+	jne	.L11
+	call	__errno_location@PLT
 	movl	(%rax), %eax
+	movl	%eax, %edi
+	call	strerror@PLT
+	movq	%rax, %rbx
+	call	__errno_location@PLT
+	movl	(%rax), %eax
+	movq	%rbx, %rdx
 	movl	%eax, %esi
-	movl	$.LC4, %edi
+	leaq	.LC4(%rip), %rdi
 	movl	$0, %eax
-	call	printf
-	jmp	.L11
-.L10:
+	call	printf@PLT
+	jmp	.L12
+.L11:
 	movq	shm(%rip), %rax
-	movl	-24(%rbp), %edx
+	movl	-1096(%rbp), %edx
 	movl	%edx, (%rax)
-	call	getpid
+	call	getpid@PLT
 	movl	%eax, %esi
-	movl	-24(%rbp), %ecx
+	movl	-1096(%rbp), %ecx
 	movq	shm(%rip), %rax
 	movl	(%rax), %edx
 	movq	shm(%rip), %rax
 	movl	%esi, %r8d
 	movq	%rax, %rsi
-	movl	$.LC5, %edi
+	leaq	.LC5(%rip), %rdi
 	movl	$0, %eax
-	call	printf
-	movw	$2, -48(%rbp)
+	call	printf@PLT
+	movw	$2, -1072(%rbp)
 	movl	$0, %edi
-	call	htonl
-	movl	%eax, -44(%rbp)
+	call	htonl@PLT
+	movl	%eax, -1068(%rbp)
 	movl	SCTP_PORT(%rip), %eax
 	movzwl	%ax, %eax
 	movl	%eax, %edi
-	call	htons
-	movw	%ax, -46(%rbp)
-	movl	-24(%rbp), %eax
-	leaq	-48(%rbp), %rcx
+	call	htons@PLT
+	movw	%ax, -1070(%rbp)
+	movl	-1096(%rbp), %eax
+	leaq	-1072(%rbp), %rcx
 	movl	$16, %edx
 	movq	%rcx, %rsi
 	movl	%eax, %edi
-	call	bind
-	movl	%eax, -20(%rbp)
-	cmpl	$-1, -20(%rbp)
-	jne	.L12
-	call	__errno_location
+	call	bind@PLT
+	movl	%eax, -1076(%rbp)
+	cmpl	$-1, -1076(%rbp)
+	jne	.L13
+	call	__errno_location@PLT
 	movl	(%rax), %eax
 	movl	%eax, %esi
-	movl	$.LC6, %edi
+	leaq	.LC6(%rip), %rdi
 	movl	$0, %eax
-	call	printf
-	jmp	.L11
-.L12:
-	movl	-24(%rbp), %eax
+	call	printf@PLT
+	jmp	.L12
+.L13:
+	movl	-1096(%rbp), %eax
 	movl	$5, %esi
 	movl	%eax, %edi
-	call	listen
-	movl	%eax, -20(%rbp)
-	jmp	.L13
-.L16:
-	movl	$.LC7, %edi
-	call	puts
-	movl	-24(%rbp), %eax
+	call	listen@PLT
+	movl	%eax, -1076(%rbp)
+	jmp	.L14
+.L17:
+	leaq	.LC7(%rip), %rdi
+	call	puts@PLT
+	movl	-1096(%rbp), %eax
 	movl	$0, %edx
 	movl	$0, %esi
 	movl	%eax, %edi
-	call	accept
-	movl	%eax, -12(%rbp)
-	cmpl	$-1, -12(%rbp)
-	jne	.L14
-	movl	$.LC8, %edi
-	call	puts
-	jmp	.L15
-.L14:
-	leaq	-1088(%rbp), %rcx
-	movl	-12(%rbp), %eax
+	call	accept@PLT
+	movl	%eax, -1084(%rbp)
+	cmpl	$-1, -1084(%rbp)
+	jne	.L15
+	leaq	.LC8(%rip), %rdi
+	call	puts@PLT
+	jmp	.L16
+.L15:
+	leaq	-1056(%rbp), %rcx
+	movl	-1084(%rbp), %eax
 	movl	$1024, %edx
 	movq	%rcx, %rsi
 	movl	%eax, %edi
-	call	read
-	movl	%eax, -16(%rbp)
-	movl	-16(%rbp), %eax
+	call	read@PLT
+	movl	%eax, -1080(%rbp)
+	movl	-1080(%rbp), %eax
 	cltq
-	movb	$0, -1088(%rbp,%rax)
-	leaq	-1088(%rbp), %rax
+	movb	$0, -1056(%rbp,%rax)
+	leaq	-1056(%rbp), %rax
 	movq	%rax, %rsi
-	movl	$.LC9, %edi
+	leaq	.LC9(%rip), %rdi
 	movl	$0, %eax
-	call	printf
-.L15:
-	subl	$1, -8(%rbp)
-.L13:
-	cmpl	$0, -8(%rbp)
-	jg	.L16
+	call	printf@PLT
+.L16:
+	subl	$1, -1088(%rbp)
+.L14:
+	cmpl	$0, -1088(%rbp)
+	jg	.L17
 	movq	shm(%rip), %rax
 	movl	(%rax), %eax
 	movl	%eax, %esi
-	movl	$.LC10, %edi
+	leaq	.LC10(%rip), %rdi
 	movl	$0, %eax
-	call	printf
+	call	printf@PLT
 	movl	$30, %edi
-	call	sleep
+	call	sleep@PLT
 	movq	shm(%rip), %rax
 	movl	(%rax), %eax
 	movl	$1, %esi
 	movl	%eax, %edi
-	call	shutdown
-	movl	%eax, -20(%rbp)
-	cmpl	$-1, -20(%rbp)
-	jne	.L17
-	movl	$.LC11, %edi
-	call	puts
-	jmp	.L11
-.L17:
-	movl	$.LC12, %edi
-	call	puts
-	movl	-24(%rbp), %eax
+	call	shutdown@PLT
+	movl	%eax, -1076(%rbp)
+	cmpl	$-1, -1076(%rbp)
+	jne	.L18
+	leaq	.LC11(%rip), %rdi
+	call	puts@PLT
+	jmp	.L12
+.L18:
+	leaq	.LC12(%rip), %rdi
+	call	puts@PLT
+	movl	-1096(%rbp), %eax
 	movl	%eax, %edi
-	call	close
-	movl	%eax, -20(%rbp)
+	call	close@PLT
+	movl	%eax, -1076(%rbp)
 	movq	shm(%rip), %rax
 	movl	$4, %esi
 	movq	%rax, %rdi
-	call	munmap
+	call	munmap@PLT
 	movl	$0, %eax
-	jmp	.L20
-.L11:
-	movl	-24(%rbp), %eax
+	jmp	.L21
+.L12:
+	movl	-1096(%rbp), %eax
 	testl	%eax, %eax
-	je	.L19
-	movl	-24(%rbp), %eax
+	je	.L20
+	movl	-1096(%rbp), %eax
 	movl	%eax, %edi
-	call	close
-.L19:
+	call	close@PLT
+.L20:
 	movq	shm(%rip), %rax
 	movl	$4, %esi
 	movq	%rax, %rdi
-	call	munmap
+	call	munmap@PLT
 	movl	$99, %eax
-.L20:
-	leave
+.L21:
+	movq	-24(%rbp), %rbx
+	xorq	%fs:40, %rbx
+	je	.L22
+	call	__stack_chk_fail@PLT
+.L22:
+	addq	$1096, %rsp
+	popq	%rbx
+	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE4:
+.LFE8:
 	.size	main, .-main
-	.ident	"GCC: (GNU) 6.3.1 20161221 (Red Hat 6.3.1-1)"
+	.ident	"GCC: (Ubuntu 8.3.0-6ubuntu1~18.10.1) 8.3.0"
 	.section	.note.GNU-stack,"",@progbits

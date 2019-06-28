@@ -24,10 +24,54 @@
                 C library's stream I/O functions: fopen(), fprintf(), .. </br>
             </li>
             <li> 2.2 Coding defensively </br>
-                <li> Using standard C macro "assert", -DNDEBUG </br>
-                    Check against null pointers, for instance, as invalid function arguments </br>
-                    The  program  is  terminated  if  the  expression  evaluates to false, after printing an error message containing the source file and line number and the text  of  the  expression.</li>
-                <li></li>
+                <ol>
+                    <li> Using standard C macro "assert", -DNDEBUG </br>
+                        Check against null pointers, for instance, as invalid function arguments </br>
+                        The  program  is  terminated  if  the  expression  evaluates to false, after printing an error message containing the source file and line number and the text  of  the  expression.
+                    </li>
+                    <li> System cll failures </br>
+                        using macro erno/<errno.h> strerror/<string.h>, </br>
+                        - running out of resources (memory addresses, file descriptors, ) </br>
+                        - block access, no permission. </br>
+                        - invalid arguments </br>
+                        - external error, faulty devices </br>
+                        - interrupted by external event, signal </br>
+                    </li>
+                <ol>
+            </li>
+            <li> 2.3 Writing ans using libraries </br>
+                2.3.1 archives: </br>
+                - must define static library by the end of gcc, so that the linker can include
+                object in libtest.a in the binary. </br>
+                       gcc -c test1.c test2.c </br>
+                       ar cr libtest.a test1.o test2.o </br>
+                       gcc -L. -ltest main.c /* too soon, undefined reference to xxx() */ </br>
+                       gcc main.c -L. -ltest </br>
+                2.3.2 shared libraries </br>
+                - shared library will include all references to the binary, rather than just
+                those portions that are needed. </br>
+                       gcc -c -fpic test1.c </br>
+                       gcc -share -fpic -o libtest.so test1.o </br>
+                       gcc main.c -L. ltest -Wl,-rpath,./ </br>
+                2.3.3 if same function in both static and shared, shared is preferred.
+                unless ---> gcc -static main.c -L. -ltest </br>
+                   standard library libc, or libstdc++ is automatical linked to our program. </br>
+                   standard libm must be included explicitly -lm </br>
+                   or auto cp to /usr/local/lib;/usr/lib & reload the loader: ldconfig </br>
+                2.3.4 Libraries dependancies </br>
+                   ldd (ld-linux.so) </br>
+                2.3.5 Pros and cons </br>
+                   export LD_LIBRARY_PATH=./:$LD_LIBRARY_PATH </br>
+                   or: compile our program with -Wl,-rpath:./ </br>
+                2.3.6 Dynamic loading and unloading </br>
+                   void* handle = dlopen("libtest.so", RTLD_LAZY);</br>
+                   void (*test)() = dlsym(handle, "test_func");</br>
+                   (*test)();</br>
+                   dlclose(handle)</br>
+                   </br>
+                    C++: extern "C"  linkage  specifier.
+                    </br>
+                    <p>This  prevents  the  C++  compiler  from  mangling  the  function  name,  which  would  change  the  function's name from foo to a different, funny-looking name that encodes extra information about the  function.  A  C  compiler  will  not  mangle  names;  it  will  use  whichever  name  you  give  to  your  function or variable</p>
             </li>
         </ol>
     </li>

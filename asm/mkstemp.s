@@ -1,4 +1,5 @@
 	.file	"mkstemp.c"
+	.text
 	.globl	fd
 	.data
 	.align 4
@@ -10,7 +11,7 @@ fd:
 	.globl	write_tmp
 	.type	write_tmp, @function
 write_tmp:
-.LFB2:
+.LFB6:
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
@@ -20,41 +21,49 @@ write_tmp:
 	subq	$48, %rsp
 	movq	%rdi, -40(%rbp)
 	movq	%rsi, -48(%rbp)
+	movq	%fs:40, %rax
+	movq	%rax, -8(%rbp)
+	xorl	%eax, %eax
 	movabsq	$7882834469880427567, %rax
+	movabsq	$6365935209750736496, %rdx
 	movq	%rax, -32(%rbp)
-	movabsq	$6365935209750736496, %rax
-	movq	%rax, -24(%rbp)
+	movq	%rdx, -24(%rbp)
 	movb	$0, -16(%rbp)
 	leaq	-32(%rbp), %rax
 	movq	%rax, %rdi
-	call	mkstemp
+	call	mkstemp@PLT
 	movl	%eax, fd(%rip)
 	movl	fd(%rip), %eax
 	leaq	-48(%rbp), %rcx
 	movl	$8, %edx
 	movq	%rcx, %rsi
 	movl	%eax, %edi
-	call	write
+	call	write@PLT
 	movq	-48(%rbp), %rdx
 	movl	fd(%rip), %eax
 	movq	-40(%rbp), %rcx
 	movq	%rcx, %rsi
 	movl	%eax, %edi
-	call	write
+	call	write@PLT
 	leaq	-32(%rbp), %rax
 	movq	%rax, %rdi
-	call	unlink
+	call	unlink@PLT
 	nop
+	movq	-8(%rbp), %rax
+	xorq	%fs:40, %rax
+	je	.L2
+	call	__stack_chk_fail@PLT
+.L2:
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE2:
+.LFE6:
 	.size	write_tmp, .-write_tmp
 	.globl	read_tmp
 	.type	read_tmp, @function
 read_tmp:
-.LFB3:
+.LFB7:
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
@@ -68,18 +77,18 @@ read_tmp:
 	movl	$0, %edx
 	movl	$0, %esi
 	movl	%eax, %edi
-	call	lseek
+	call	lseek@PLT
 	movl	fd(%rip), %eax
 	movq	-24(%rbp), %rcx
 	movl	$8, %edx
 	movq	%rcx, %rsi
 	movl	%eax, %edi
-	call	read
+	call	read@PLT
 	movq	-24(%rbp), %rax
 	movq	(%rax), %rax
 	addq	$1, %rax
 	movq	%rax, %rdi
-	call	malloc
+	call	malloc@PLT
 	movq	%rax, -8(%rbp)
 	movq	-24(%rbp), %rax
 	movq	(%rax), %rdx
@@ -87,16 +96,16 @@ read_tmp:
 	movq	-8(%rbp), %rcx
 	movq	%rcx, %rsi
 	movl	%eax, %edi
-	call	read
+	call	read@PLT
 	movl	fd(%rip), %eax
 	movl	%eax, %edi
-	call	close
+	call	close@PLT
 	movq	-8(%rbp), %rax
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3:
+.LFE7:
 	.size	read_tmp, .-read_tmp
 	.section	.rodata
 .LC0:
@@ -107,41 +116,50 @@ read_tmp:
 	.globl	main
 	.type	main, @function
 main:
-.LFB4:
+.LFB8:
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	subq	$16, %rsp
-	movq	$.LC0, -8(%rbp)
-	movq	$0, -16(%rbp)
-	movq	-8(%rbp), %rax
+	subq	$32, %rsp
+	movq	%fs:40, %rax
+	movq	%rax, -8(%rbp)
+	xorl	%eax, %eax
+	leaq	.LC0(%rip), %rax
+	movq	%rax, -16(%rbp)
+	movq	$0, -24(%rbp)
+	movq	-16(%rbp), %rax
 	movq	%rax, %rdi
-	call	strlen
+	call	strlen@PLT
 	movq	%rax, %rdx
-	movq	-8(%rbp), %rax
+	movq	-16(%rbp), %rax
 	movq	%rdx, %rsi
 	movq	%rax, %rdi
 	call	write_tmp
-	leaq	-16(%rbp), %rax
+	leaq	-24(%rbp), %rax
 	movq	%rax, %rdi
 	call	read_tmp
-	movq	-16(%rbp), %rax
+	movq	-24(%rbp), %rax
 	movl	%eax, %ecx
-	movq	-8(%rbp), %rax
+	movq	-16(%rbp), %rax
 	movq	%rax, %rdx
 	movl	%ecx, %esi
-	movl	$.LC1, %edi
+	leaq	.LC1(%rip), %rdi
 	movl	$0, %eax
-	call	printf
+	call	printf@PLT
 	movl	$9, %eax
+	movq	-8(%rbp), %rcx
+	xorq	%fs:40, %rcx
+	je	.L7
+	call	__stack_chk_fail@PLT
+.L7:
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE4:
+.LFE8:
 	.size	main, .-main
-	.ident	"GCC: (GNU) 6.3.1 20161221 (Red Hat 6.3.1-1)"
+	.ident	"GCC: (Ubuntu 8.3.0-6ubuntu1~18.10.1) 8.3.0"
 	.section	.note.GNU-stack,"",@progbits

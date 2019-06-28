@@ -6,7 +6,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include <netinet/in.h>
-#include <netinet/sctp.h>
+/*#include <netinet/sctp.h>*/
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <sys/mman.h>
@@ -34,11 +34,11 @@ void child_process (int i) {
 	server_addr.sin_port = htons (SCTP_PORT);
 
 	ret = connect(client_sock, (struct sockaddr *)&server_addr, sizeof(server_addr));
-	
+
 	printf("send=%s\n", buffer);
 	ret = write(client_sock, buffer, sizeof(buffer));
 	close(client_sock);
-	
+
 	if (i == 5) {
 		int invalid = 10;
 		printf("%p burn server_sock=%d\n", shm, *((int *)shm));
@@ -52,9 +52,8 @@ int main() {
 	int server_sock = 0, conn_sock = 0, in = 0;
 	int ret = 0;
 	struct sockaddr_in server_addr;
-	struct sctp_initmsg init_msg;
+	/*struct sctp_initmsg init_msg;*/
 	shm = mm(sizeof(int));
-
 	for (;child > 0; child--) {
 		if(fork() == 0) {
 			child_process(child);
@@ -62,7 +61,7 @@ int main() {
 		}
 	}
 	if ((server_sock = socket(AF_INET, SOCK_STREAM, IPPROTO_SCTP)) == -1 ) {
-		printf("failure server socker %d \n ", errno);
+		printf("failure server socker %d %s \n ", errno, strerror(errno));
 		goto err;
 	}
 	memcpy(shm, &server_sock, sizeof(int));

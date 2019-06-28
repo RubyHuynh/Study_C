@@ -1,4 +1,5 @@
 	.file	"interpositioning.c"
+	.text
 	.globl	total_mem
 	.bss
 	.align 4
@@ -10,7 +11,7 @@ total_mem:
 	.globl	mymalloc
 	.type	mymalloc, @function
 mymalloc:
-.LFB2:
+.LFB6:
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
@@ -24,12 +25,12 @@ mymalloc:
 	movl	%eax, total_mem(%rip)
 	movq	-8(%rbp), %rax
 	movq	%rax, %rdi
-	call	malloc
+	call	malloc@PLT
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE2:
+.LFE6:
 	.size	mymalloc, .-mymalloc
 	.section	.rodata
 .LC0:
@@ -38,32 +39,40 @@ mymalloc:
 	.globl	main
 	.type	main, @function
 main:
-.LFB3:
+.LFB7:
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	subq	$16, %rsp
+	subq	$32, %rsp
+	movq	%fs:40, %rax
+	movq	%rax, -8(%rbp)
+	xorl	%eax, %eax
+	movl	$19, %edi
+	call	mymalloc
+	movq	%rax, -24(%rbp)
 	movl	$19, %edi
 	call	mymalloc
 	movq	%rax, -16(%rbp)
-	movl	$19, %edi
-	call	mymalloc
-	movq	%rax, -8(%rbp)
 	movl	total_mem(%rip), %edx
-	leaq	-16(%rbp), %rax
+	leaq	-24(%rbp), %rax
 	movq	%rax, %rsi
-	movl	$.LC0, %edi
+	leaq	.LC0(%rip), %rdi
 	movl	$0, %eax
-	call	printf
+	call	printf@PLT
 	movl	$0, %eax
+	movq	-8(%rbp), %rcx
+	xorq	%fs:40, %rcx
+	je	.L5
+	call	__stack_chk_fail@PLT
+.L5:
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE3:
+.LFE7:
 	.size	main, .-main
-	.ident	"GCC: (GNU) 6.3.1 20161221 (Red Hat 6.3.1-1)"
+	.ident	"GCC: (Ubuntu 8.3.0-6ubuntu1~18.10.1) 8.3.0"
 	.section	.note.GNU-stack,"",@progbits

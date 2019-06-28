@@ -1,9 +1,16 @@
+#include <errno.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
+#include <string.h>
 
 int main() {
     int i = 0;
+    char buffer[10];
+
+    if(read(90, &buffer, 0) == -1) {
+        printf("failure read:%d %s\n ", errno, strerror(errno));
+    }
     while (i++ < 100) {
         printf("%d", i); // data will be buffered and sent to console when it is full
         fflush(stdout); // fflush to force sending out the date

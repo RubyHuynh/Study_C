@@ -1,9 +1,10 @@
 	.file	"environment.c"
+	.text
 	.globl	new_key
 	.section	.rodata
 .LC0:
 	.string	"TEMO"
-	.data
+	.section	.data.rel.local,"aw"
 	.align 8
 	.type	new_key, @object
 	.size	new_key, 8
@@ -18,7 +19,7 @@ new_key:
 	.globl	main
 	.type	main, @function
 main:
-.LFB2:
+.LFB6:
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
@@ -33,7 +34,7 @@ main:
 	movq	-8(%rbp), %rax
 	movq	(%rax), %rax
 	movq	%rax, %rdi
-	call	puts
+	call	puts@PLT
 	addq	$8, -8(%rbp)
 .L2:
 	movq	-8(%rbp), %rax
@@ -42,22 +43,22 @@ main:
 	jne	.L3
 	movq	new_key(%rip), %rax
 	movl	$1, %edx
-	movl	$.LC1, %esi
+	leaq	.LC1(%rip), %rsi
 	movq	%rax, %rdi
-	call	setenv
+	call	setenv@PLT
 	movq	new_key(%rip), %rax
 	movq	%rax, %rdi
-	call	getenv
+	call	getenv@PLT
 	movq	%rax, %rsi
-	movl	$.LC2, %edi
+	leaq	.LC2(%rip), %rdi
 	movl	$0, %eax
-	call	printf
+	call	printf@PLT
 	movl	$7, %eax
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE2:
+.LFE6:
 	.size	main, .-main
-	.ident	"GCC: (GNU) 6.3.1 20161221 (Red Hat 6.3.1-1)"
+	.ident	"GCC: (Ubuntu 8.3.0-6ubuntu1~18.10.1) 8.3.0"
 	.section	.note.GNU-stack,"",@progbits

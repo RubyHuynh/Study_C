@@ -1,4 +1,5 @@
 	.file	"assert.c"
+	.text
 	.section	.rodata
 .LC0:
 	.string	"aaa"
@@ -14,7 +15,7 @@
 	.globl	main
 	.type	main, @function
 main:
-.LFB2:
+.LFB6:
 	.cfi_startproc
 	pushq	%rbp
 	.cfi_def_cfa_offset 16
@@ -22,47 +23,47 @@ main:
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
 	subq	$16, %rsp
-	movl	$10, -4(%rbp)
-	movq	$0, -16(%rbp)
-	movl	$.LC0, %edi
-	call	puts
-	movq	$0, -16(%rbp)
-	cmpq	$0, -16(%rbp)
+	movl	$10, -12(%rbp)
+	movq	$0, -8(%rbp)
+	leaq	.LC0(%rip), %rdi
+	call	puts@PLT
+	movq	$0, -8(%rbp)
+	cmpq	$0, -8(%rbp)
 	jne	.L3
-	movl	$__PRETTY_FUNCTION__.2718, %ecx
+	leaq	__PRETTY_FUNCTION__.2886(%rip), %rcx
 	movl	$14, %edx
-	movl	$.LC1, %esi
-	movl	$.LC2, %edi
-	call	__assert_fail
+	leaq	.LC1(%rip), %rsi
+	leaq	.LC2(%rip), %rdi
+	call	__assert_fail@PLT
 .L5:
-	movl	-4(%rbp), %eax
+	movl	-12(%rbp), %eax
 	movl	%eax, %esi
-	movl	$.LC3, %edi
+	leaq	.LC3(%rip), %rdi
 	movl	$0, %eax
-	call	printf
-	cmpl	$2, -4(%rbp)
+	call	printf@PLT
+	cmpl	$2, -12(%rbp)
 	jle	.L4
-	movl	$__PRETTY_FUNCTION__.2718, %ecx
+	leaq	__PRETTY_FUNCTION__.2886(%rip), %rcx
 	movl	$24, %edx
-	movl	$.LC1, %esi
-	movl	$.LC4, %edi
-	call	__assert_fail
+	leaq	.LC1(%rip), %rsi
+	leaq	.LC4(%rip), %rdi
+	call	__assert_fail@PLT
 .L4:
-	subl	$1, -4(%rbp)
+	subl	$1, -12(%rbp)
 .L3:
-	cmpl	$0, -4(%rbp)
+	cmpl	$0, -12(%rbp)
 	jne	.L5
 	movl	$0, %eax
 	leave
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
-.LFE2:
+.LFE6:
 	.size	main, .-main
 	.section	.rodata
-	.type	__PRETTY_FUNCTION__.2718, @object
-	.size	__PRETTY_FUNCTION__.2718, 5
-__PRETTY_FUNCTION__.2718:
+	.type	__PRETTY_FUNCTION__.2886, @object
+	.size	__PRETTY_FUNCTION__.2886, 5
+__PRETTY_FUNCTION__.2886:
 	.string	"main"
-	.ident	"GCC: (GNU) 6.3.1 20161221 (Red Hat 6.3.1-1)"
+	.ident	"GCC: (Ubuntu 8.3.0-6ubuntu1~18.10.1) 8.3.0"
 	.section	.note.GNU-stack,"",@progbits
