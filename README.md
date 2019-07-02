@@ -73,6 +73,16 @@
                     </br>
                     <p>This  prevents  the  C++  compiler  from  mangling  the  function  name,  which  would  change  the  function's name from foo to a different, funny-looking name that encodes extra information about the  function.  A  C  compiler  will  not  mangle  names;  it  will  use  whichever  name  you  give  to  your  function or variable</p>
             </li>
+            <li> 3.2 Creating Processes: system(cmd), fork() == 0, execvpl() return only error. </br>
+                    - priority niceness, nice/renice -n 10 x, nice negative with root account only.
+            </li>
+            <li> 3.3 Signals, async (interrupt sync) </li>
+            <li> 3.4 Process Termination </br>
+                    3.4.1 Waiting for process termination. </br>
+                    3.4.2 wait systemcall, wait(3) wait(4) block or WNOHANG. </br>
+                    3.4.3 zombie process. </br>
+                    3.4.3 cleaning up children asynchronous by catching SIGCHLD, wait(). </br>
+            </li>
         </ol>
     </li>
     <li>Others </br>

@@ -35,9 +35,9 @@ setEnv:
 	.cfi_endproc
 .LFE6:
 	.size	setEnv, .-setEnv
-	.globl	voidEnv
-	.type	voidEnv, @function
-voidEnv:
+	.globl	intEnv
+	.type	intEnv, @function
+intEnv:
 .LFB7:
 	.cfi_startproc
 	pushq	%rbp
@@ -47,13 +47,13 @@ voidEnv:
 	.cfi_def_cfa_register 6
 	movq	%rdi, -8(%rbp)
 	movq	%rsi, -16(%rbp)
-	nop
+	movl	$0, %eax
 	popq	%rbp
 	.cfi_def_cfa 7, 8
 	ret
 	.cfi_endproc
 .LFE7:
-	.size	voidEnv, .-voidEnv
+	.size	intEnv, .-intEnv
 	.section	.rodata
 	.type	__FUNCTION__.2872, @object
 	.size	__FUNCTION__.2872, 7
