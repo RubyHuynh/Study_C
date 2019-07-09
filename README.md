@@ -37,7 +37,7 @@
                         - external error, faulty devices </br>
                         - interrupted by external event, signal </br>
                     </li>
-                <ol>
+                </ol>
             </li>
             <li> 2.3 Writing ans using libraries </br>
                 2.3.1 archives: </br>
@@ -73,15 +73,28 @@
                     </br>
                     <p>This  prevents  the  C++  compiler  from  mangling  the  function  name,  which  would  change  the  function's name from foo to a different, funny-looking name that encodes extra information about the  function.  A  C  compiler  will  not  mangle  names;  it  will  use  whichever  name  you  give  to  your  function or variable</p>
             </li>
-            <li> 3.2 Creating Processes: system(cmd), fork() == 0, execvpl() return only error. </br>
-                    - priority niceness, nice/renice -n 10 x, nice negative with root account only.
+            <!-- 3. PROCESS -->
+            <li> 3 Process </br>
+                <li> 3.2 Creating Processes: system(cmd), fork() == 0, execvpl() return only error. </br>
+                        - priority niceness, nice/renice -n 10 x, nice negative with root account only.
+                </li>
+                <li> 3.3 Signals, async (interrupt sync) </li>
+                <li> 3.4 Process Termination </br>
+                        3.4.1 Waiting for process termination. </br>
+                        3.4.2 wait systemcall, wait(3) wait(4) block or WNOHANG. </br>
+                        3.4.3 zombie process. </br>
+                        3.4.3 cleaning up children asynchronous by catching SIGCHLD, wait(). </br>
+                </li>
             </li>
-            <li> 3.3 Signals, async (interrupt sync) </li>
-            <li> 3.4 Process Termination </br>
-                    3.4.1 Waiting for process termination. </br>
-                    3.4.2 wait systemcall, wait(3) wait(4) block or WNOHANG. </br>
-                    3.4.3 zombie process. </br>
-                    3.4.3 cleaning up children asynchronous by catching SIGCHLD, wait(). </br>
+            <!-- 4. THREAD -->
+            <li> 4. Threads </br>
+                <li> 4.1 thread creation: pthread_t, separate library -lpthread, using the same memory address </br>
+                     4.1.1 passing data to threads. </br>
+                     4.1.2 pthread_join() </br>
+                     4.1.5 thread attributes </br>
+                </li>
+                <li> 4.2 thread cancellation, sync and async</li>
+                <li> 4.3 thread-specific data </li>
             </li>
         </ol>
     </li>
