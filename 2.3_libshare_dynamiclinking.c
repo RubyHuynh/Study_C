@@ -2,7 +2,7 @@
 #include <stdlib.h>
 
 /* Using shared lib normally*/
-#include "libshare.h"
+#include "2.3_libshare.h"
 
 int main() {
     setEnv("HAHA", "HOHO");

@@ -95,6 +95,19 @@
                 </li>
                 <li> 4.2 thread cancellation, sync and async</li>
                 <li> 4.3 thread-specific data </li>
+                <li> 4.4 synchronization and critical sections </br>
+                     4.4.1 Race conditions </br>
+                     4.4.2 Mutexes (MUtual EXclusion locks) </br>
+                     4.4.3 Mutex Deadlocks </br>
+                        - fast mutex (the default kind): will cause dealock</br>
+                        - recursive mutex: does not cause deadlk. lock must equal to unlock </br>
+                        - error-checking mutex: -- consecutive lock ->EDEADLK </br>
+                     4.4.5 Semaphores (wait--) (post++) (exex==0) </br>
+                     4.4.6 Condition variables </br>
+                     4.4.7 Deadlocks with multi threads </br>
+                </li>
+                <li> 4.5 Thread implemention
+                </li>
             </li>
         </ol>
     </li>
