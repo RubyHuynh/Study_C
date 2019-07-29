@@ -111,10 +111,10 @@
             </li>
             <!-- 5. IPC -->
             <li> 5. Interprocess Communication </br>
-                <li>5.1 SHM: shmget, shmat, shmctl, ipc -m</li>
-                <li>5.2 SemaphoreHM: semget, semctl, wait(), post(), ipc -s</li>
-                <li>5.3 Mapped memory: mmap, munmap, msync, </li>
-                <li>5.4 Pipes: pipe, dup2 </li>
+                 5.1 SHM: shmget, shmat, shmctl, ipc -m  </br>
+                 5.2 SemaphoreHM: semget, semctl, wait(), post(), ipc -s </br>
+                 5.3 Mapped memory: mmap, munmap, msync, </br>
+                 5.4 Pipes: pipe, dup2 </br>
             </li>
         </ol>
     </li>
