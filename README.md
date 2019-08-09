@@ -115,6 +115,8 @@
                  5.2 SemaphoreHM: semget, semctl, wait(), post(), ipc -s </br>
                  5.3 Mapped memory: mmap, munmap, msync, </br>
                  5.4 Pipes: pipe, dup2 </br>
+                 5.5 Socket server-client: socket, bind, listen, accept, close </br>
+                  <b>NOTE:</b> example in the book <5.5.5> is wrong (len = NA)--TODO: debug </br>
             </li>
         </ol>
     </li>

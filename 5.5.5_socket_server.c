@@ -1,56 +1,57 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <unistd.h>
+#include <string.h>
 #include <sys/socket.h>
 #include <sys/un.h>
-#include <string.h>
+#include <unistd.h>
+/* Read text from the socket and print it out. Continue until the     socket closes.
+   Return nonzero if the client sent a "quit"     message, zero otherwise.  */
+int server (int client_socket)  {
+	while (1) {
+		int length;
+		char* text;
+		if (read (client_socket, &length, 4) == 0)
 
-int server (int client_socket) {
-    while (1) {
-        int len;
-        char *text;
+			return 0;
+        puts("gets");
+		text = (char*) malloc (length);
 
-        if (read(client_socket, &len, sizeof (len) == 0)) {
-            return 0;
+		read (client_socket, text, length);
+		printf ("%s\n", text);
+
+		free (text);
+		if (!strcmp (text, "quit"))
+			return 1;
+	}  }
+int main (int argc, char* const argv[])
+{
+	const char* const socket_name = argv[1];
+	int socket_fd;
+	struct sockaddr_un name;
+	int client_sent_quit_message;
+
+	socket_fd = socket (PF_LOCAL, SOCK_STREAM, 0);
+
+	name.sun_family = AF_LOCAL;
+	strcpy (name.sun_path, socket_name);
+	bind (socket_fd, (struct sockaddr*)&name, SUN_LEN (&name));
+
+	listen (socket_fd, 5);
+
+
+	do {
+		struct sockaddr_un client_name;
+		socklen_t client_name_len;
+		int client_socket_fd;
+		client_socket_fd = accept (socket_fd, (struct sockaddr*)&client_name, &client_name_len);
+	  	if ( client_socket_fd ) {
+            client_sent_quit_message = server (client_socket_fd);
+		    close (client_socket_fd);
         }
-        printf ("strlen=%d", len);
-        text = (char*) malloc(len);
-        read (client_socket, text, len);
-        printf ("\t%s\n", text);
-        fflush(stdout);
-        free (text);
-
-        if (!strcmp(text, "quit")) return 1;
-    }
-}
-
-int main (int argc, char* const argv[]) {
-    int socket_fd;
-    const char* const n = argv[1];
-    struct sockaddr_un name;
-    int client;
-    printf ("1");
-    socket_fd = socket (PF_LOCAL, SOCK_STREAM, 0);
-    name.sun_family = AF_LOCAL;
-    strcpy (name.sun_path, n);
-    printf ("1");
-    bind (socket_fd, (struct sockaddr*)&name, SUN_LEN (&name));
-    printf ("1");
-    listen (socket_fd, 5);
-    printf ("1");
-    do {
-        struct sockaddr_un client_name;
-        socklen_t client_name_len;
-        int client_fd;
-
-        client_fd = accept (socket_fd, (struct sockaddr*) &client_name, &client_name_len);
-        client = server (client_fd);
-        close (client_fd);
-    }
-    while (!client);
-
-    close (socket_fd);
-    unlink ("/tmp/socket1");
-    return 0;
+	}
+	while (!client_sent_quit_message);
+	close (socket_fd);
+	unlink (socket_name);
+	return 0;
 }
 
