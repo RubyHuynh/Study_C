@@ -127,7 +127,9 @@
                  mknod(path, b/c, major, minor): ls -l --> file type: c/b/or - (hyphen) </br>
                  6.3.1 /dev directory.</br>
                  6.5 Special devices: /dev/null (no action), /dev/zero (infinity zero), /dev/full (full file - enospc)</br>
-                 /dev/random (by user events), </br>
+                 /dev/random (by user events) </br>
+                 6.6. PTY, /dev/pts/, echo "hahah" > /dev/pts/4 </br>
+                 6.7. ioctl(fd, operation, args...) </br>
             </li>
         </ol>
     </li>
