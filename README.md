@@ -118,6 +118,17 @@
                  5.5 Socket server-client: socket, bind, listen, accept, close </br>
                   <b>NOTE:</b> example in the book <5.5.5> is wrong (len = NA)--TODO: debug </br>
             </li>
+            <!-- 6. Devices -->
+            <li> 6. Devices </br>
+                 6.1 Device Types: character (serial stream of bytes), block (fixed-size block) </br>
+                 Dangers of Block Devices </br>
+                 6.2 Device numbers: major-number(driver, /proc/devices) & minor-number(invidual device)  </br>
+                 6.3 Device entries: mv, rm, cp(copy bytes from devices), override devices (write bytes to devices) </br>
+                 mknod(path, b/c, major, minor): ls -l --> file type: c/b/or - (hyphen) </br>
+                 6.3.1 /dev directory.</br>
+                 6.5 Special devices: /dev/null (no action), /dev/zero (infinity zero), /dev/full (full file - enospc)</br>
+                 /dev/random (by user events), </br>
+            </li>
         </ol>
     </li>
     <li>Others </br>
