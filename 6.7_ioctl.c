@@ -17,7 +17,7 @@ int main () {
     if ((fd = socket (AF_INET, SOCK_DGRAM, 0)) >= 0) {
         conf.ifc_len = sizeof (data);
         conf.ifc_buf = (caddr_t) data;
-        if ((ioctl(fd, SIOCGIFCONF, &conf)) >= 0) {
+        if ((ioctl (fd, SIOCGIFCONF, &conf)) >= 0) {
             int i =0;
             struct ifreq *ifr;
             char addr_buf[1024];
@@ -30,13 +30,13 @@ int main () {
                         printf ("%d.%s :%s\n", i, ifr->ifr_name,
                          inet_ntop (ifr->ifr_addr.sa_family,
                              &(((struct sockaddr_in*)&ifr->ifr_addr)->sin_addr),
-                             addr_buf, sizeof(addr_buf)));
+                             addr_buf, sizeof (addr_buf)));
                     break;
 
                     default:
                     break;
                 }
-                ifr = (struct ifreq*)((char*)ifr + sizeof(*ifr));
+                ifr = (struct ifreq*)((char*)ifr + sizeof (*ifr));
             }
             close(fd);
         }
