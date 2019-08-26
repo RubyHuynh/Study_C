@@ -18,11 +18,18 @@ size_t get_exec_path (char *buffer, size_t len) {
             perror ("\tno any /\n");
         }
     }
+    else {
+        perror ("\tcannot readlink /\n");
+    }
     return rs;
 }
 int main () {
     char path[4096];
+    char path2[4];
     printf ("trim = %d\n", (int) get_exec_path (path, sizeof (path)));
     printf ("rs = %s\n", path);
+
+    printf ("trim2 = %d\n", (int) get_exec_path (path2, sizeof (path2)));
+    printf ("rs2 = %s\n", path2);
     return 0;
 }
