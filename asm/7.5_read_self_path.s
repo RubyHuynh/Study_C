@@ -7,6 +7,8 @@
 	.string	"dump %s\n\n\n"
 .LC2:
 	.string	"\tno any /\n"
+.LC3:
+	.string	"\tcannot readlink /\n"
 	.text
 	.globl	get_exec_path
 	.type	get_exec_path, @function
@@ -47,11 +49,15 @@ get_exec_path:
 	movq	-8(%rbp), %rax
 	subq	-24(%rbp), %rax
 	movq	%rax, -16(%rbp)
-	jmp	.L2
+	jmp	.L5
 .L3:
 	leaq	.LC2(%rip), %rdi
 	call	perror@PLT
+	jmp	.L5
 .L2:
+	leaq	.LC3(%rip), %rdi
+	call	perror@PLT
+.L5:
 	movq	-16(%rbp), %rax
 	leave
 	.cfi_def_cfa 7, 8
@@ -60,10 +66,14 @@ get_exec_path:
 .LFE6:
 	.size	get_exec_path, .-get_exec_path
 	.section	.rodata
-.LC3:
-	.string	"trim = %d\n"
 .LC4:
+	.string	"trim = %d\n"
+.LC5:
 	.string	"rs = %s\n"
+.LC6:
+	.string	"trim2 = %d\n"
+.LC7:
+	.string	"rs2 = %s\n"
 	.text
 	.globl	main
 	.type	main, @function
@@ -75,7 +85,7 @@ main:
 	.cfi_offset 6, -16
 	movq	%rsp, %rbp
 	.cfi_def_cfa_register 6
-	subq	$4112, %rsp
+	subq	$4128, %rsp
 	movq	%fs:40, %rax
 	movq	%rax, -8(%rbp)
 	xorl	%eax, %eax
@@ -84,20 +94,33 @@ main:
 	movq	%rax, %rdi
 	call	get_exec_path
 	movl	%eax, %esi
-	leaq	.LC3(%rip), %rdi
+	leaq	.LC4(%rip), %rdi
 	movl	$0, %eax
 	call	printf@PLT
 	leaq	-4112(%rbp), %rax
 	movq	%rax, %rsi
-	leaq	.LC4(%rip), %rdi
+	leaq	.LC5(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	leaq	-4116(%rbp), %rax
+	movl	$4, %esi
+	movq	%rax, %rdi
+	call	get_exec_path
+	movl	%eax, %esi
+	leaq	.LC6(%rip), %rdi
+	movl	$0, %eax
+	call	printf@PLT
+	leaq	-4116(%rbp), %rax
+	movq	%rax, %rsi
+	leaq	.LC7(%rip), %rdi
 	movl	$0, %eax
 	call	printf@PLT
 	movl	$0, %eax
 	movq	-8(%rbp), %rdx
 	xorq	%fs:40, %rdx
-	je	.L7
+	je	.L9
 	call	__stack_chk_fail@PLT
-.L7:
+.L9:
 	leave
 	.cfi_def_cfa 7, 8
 	ret
