@@ -40,7 +40,8 @@ typedef struct _basic_reception_state_t {
 typedef struct _general_state_t {
     G_states state;
     general_reception_state_t* reception;
-    void* (*on_callee_accept)(void* session, G_states next_state, U_states next_u_state); /* TODO: clean up */
+    /* Just for fun! */
+    void* (*on_callee_accept)(void* session, G_states next_state, U_states next_u_state);
 } general_state_t;
 
 typedef struct _basic_state_t {
@@ -55,6 +56,7 @@ typedef struct _tm_queue_t {
 
 typedef struct _participant_t {
     char* ssrc;
+    int priority;
     basic_state_t* basic_machine;
     struct _participant_t* next;
 } participant_t;
@@ -64,6 +66,7 @@ typedef struct _invite_t {
     bool is_originating;
     bool is_mc_granted;
     bool is_implicit_trans;
+    int session_idx;
 } invite_t;
 
 typedef struct _config_t {
@@ -73,9 +76,9 @@ typedef struct _config_t {
 
 typedef struct _session_t {
     call_type type;
-    int cx;
-    int c2;
-    int c4; /* grant counter */
+    int cx; /* nb of recv TM request */
+    int c2; /* timer sent transmit idle counter */
+    int c4; /* timer sent grant counter */
     invite_t* incoming_invite;
     pthread_t timers[5];
     general_state_t general_machine;

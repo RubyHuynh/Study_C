@@ -73,11 +73,19 @@ void recv_TM_end_request (session_t* session, int from) {
 }
 
 void send_TM_idle () {
-    printf ("send TM Idle \n");
+    printf ("send TM Idle to all \n");
 }
 
 void send_TM_grant () {
-    printf ("send TM Granted \n");
+    printf ("send TM Granted to 1 participant \n");
+}
+
+void send_TM_revoke () {
+    printf ("send TM Revoke to 1 participant \n");
+}
+
+void send_TM_queue_position_info () {
+    printf ("send TM Queue Position Info to 1 participant \n");
 }
 
 void send_TM_media_notify () {
@@ -142,6 +150,36 @@ void push_TM_queue (session_t* session, int from) {
         session->tm_queue = new;
     }
 }
+
+void check_implicit_invite (session_t* session) {
+    printf ("to revoke if possible\n");
+    if (session->cx < 10) {
+        recv_TM_request(session, 0, "auto_generated_ssrc");
+    }
+    else {
+        switch (session->general_machine.state) {
+            case G_START_STOP:
+            break;
+
+            case G_TAKEN:
+            {
+                /* choose & remove a smallest priority user */
+                participant_t* prev_one = session->participants[1];
+                participant_t* unlucky_one = session->participants[2];
+                participant_t* new_one = (participant_t*) my_alloc (sizeof (participant_t*));
+                new_one->next = unlucky_one->next;
+                prev_one->next = new_one;
+                my_free (unlucky_one);
+
+                change_state(session, G_PENDING_REVOKE, U_INVALID);
+            }
+            break;
+
+            default:
+            break;
+        }
+    }
+}
 /*----------------end TM */
 
 /*----------------begin SIP */
@@ -155,7 +193,9 @@ void recv_invite (invite_t* invite) {
         }
         else {
             session_t* session = NULL;
-            if ((session = (session_t*) my_alloc (sizeof (session_t))) != NULL) {
+            if (invite->is_initial) {
+                session = (session_t*) my_alloc (sizeof (session_t));
+                invite->session_idx = nb_session;
                 session->incoming_invite = invite;
                 session->participants[0] = my_alloc (sizeof (participant_t)); /* caller */
                 session->participants[1] = my_alloc (sizeof (participant_t)); /* callee 1 */
@@ -164,7 +204,13 @@ void recv_invite (invite_t* invite) {
                 printf ("session=%d is allocated\n", nb_session);
                 all_sessions [nb_session++] = session;
             }
-            else err();
+            else {
+                printf ("implicit invite on existing session %d", invite->session_idx);
+                session = all_sessions [invite->session_idx];
+            }
+            if (invite->is_implicit_trans && session) {
+                check_implicit_invite (session);
+            }
         }
     }
     else {
@@ -280,6 +326,17 @@ void* change_state (void* sess, G_states next_state, U_states next_u_state) {
                 if (!session->general_machine.reception)
                     session->general_machine.reception = my_alloc (sizeof (general_reception_state_t));
             }
+            break;
+
+            case G_PENDING_REVOKE:
+            {
+                if (session->general_machine.state == G_TAKEN) {
+                    pthread_cancel (session->timers[4]); /* if any */
+                }
+                send_TM_revoke ();
+                send_TM_queue_position_info ();
+            }
+            break;
             default:
             break;
         }
@@ -309,14 +366,29 @@ int main () {
         switch (navigation) {
             case 1:
             {
-                int mc_granted;
+                int val;
                 invite_t* invite = (invite_t*) my_alloc (sizeof (invite_t));
+
                 printf ("Recv INVITE...\n");
-                printf ("fmtp:mc_granted? [0,1]\n");
-                scanf ("%d", &mc_granted);
-                invite->is_initial = true;
                 invite->is_originating = true;
-                invite->is_mc_granted = mc_granted;
+
+                printf ("initial? [0 or number]\n");
+                scanf ("%d", &val);
+                invite->is_initial = val;
+
+                if (!val) {
+                    printf ("nb=? [0 .. %d]\n", nb_session);
+                    scanf ("%d", &val);
+                    invite->session_idx = val;
+                }
+                printf ("fmtp:mc_granted? [0,1]\n");
+                scanf ("%d", &val);
+                invite->is_mc_granted = val;
+
+                printf ("fmtp:mc_implicit? [0,1]\n");
+                scanf ("%d", &val);
+                invite->is_implicit_trans = val;
+
                 recv_invite (invite);
             }
             break;
