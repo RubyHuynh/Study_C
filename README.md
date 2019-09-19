@@ -151,8 +151,22 @@
                  8.8 mlock (virt_addr, size), munlock: lock entire page from swapping in and out.</br>
                      mlockall (MCL_CURRENT/FUTURE), munlockall: lock all program's entire address space.</br>
                      to avoid thrashing situation, only superuser can user these funtions (sys/mman.h)</br>
-                 8.9 mprotect: modified mapped memory permission (or else having a SIGSEGV-violation)</br>
+                 8.9 mprotect: modified mapped memory permission (or else having a SIGSEGV-violation) </br>
+                 8.10 sendfile() </br>
                  </br>
+            </li>
+            <!-- 9 inline asm -->
+            <li> 9. Inline asm </br>
+                9.5 asm/__asm__ ("asm_instructor %x,%y; asm_instructor2 %xx, %yy" </br>
+                    : "=r/g/.." (input_variable) </br>
+                    : "r/g/m..." (output_variable) </br>
+                    : "clobbered register to recover register's value after asm execution")</br>
+            </li>
+            <!-- 10 security -->
+            <li> 10. Security </br>
+                - geteuid(), getegid(): never fail </br>
+                - ls -l -o or stat: (d/-xxxyyyzzz): xxx: owning user (chmod +), yyy group user(chmod g+), zzz other users (chmod o+) </br>
+                - using PAM (Pluggable Authenticate Module) to authenticate access right</br>
             </li>
         </ol>
     </li>

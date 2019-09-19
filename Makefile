@@ -20,7 +20,7 @@ all: $(MKDIR_PS) $(OBJS)
 .SECONDEXPANSION:
 $(OBJDIR)/%.o: $(SRCDIR)/%.c | $$(@D)
 	$(CC) $(CXXFLAGS) -S $< -o $(ASMDIR)/$*.s $(INCLUDE_PATHS)
-	gcc $(CPPFLAGS) $(CXXFLAGS) -c -o $@ $<
+	gcc $(CPPFLAGS) $(CXXFLAGS) -fsanitize=address -c -o $@ $<
 
 
 
