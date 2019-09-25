@@ -5,12 +5,12 @@
 
 typedef struct _my_data_t {
     int x;
-    int* y;
-    char* str;
+    int *y;
+    char *str;
 } my_data_t;
 
-void* search_first_node(const node_t* list, const node_t* entry, bool (*func)(const void* x, const void* y)) {
-    const node_t* tmp = list;
+void *search_first_node(const node_t *list, const node_t *entry, bool (*func)(const void *x, const void *y)) {
+    const node_t *tmp = list;
 
     if (!list || !entry) return NULL;
 
@@ -23,21 +23,21 @@ void* search_first_node(const node_t* list, const node_t* entry, bool (*func)(co
     return NULL;
 }
 
-void* search_first_node_dynamic(const node_t* list, const void* entry, bool (*func)(const void* x, const void* y)) {
-    const node_t* tmp = list;
+void *search_first_node_dynamic(const node_t *list, const void* entry, bool (*func)(const void *x, const void *y)) {
+    const node_t *tmp = list;
 
     if (!list || !entry) return NULL;
 
     while (tmp) {
         if (func) {
-            if (func(tmp->data, entry)) return (void *) tmp;
+            if (func(tmp->data, entry)) return (void*) tmp->data;
         }
         tmp = tmp->next;
     }
     return NULL;
 }
 
-void free_node (node_t** node) {
+void free_node (node_t **node) {
     if (!node || !*node) return;
     if ((*node)->func_del) ((*node)->func_del)((*node)->data);
     else free ((*node)->data);
@@ -46,8 +46,8 @@ void free_node (node_t** node) {
     *node = NULL;
 }
 
-void free_nodes (node_t** list) {
-    node_t* tmp, *cur = *list;
+void free_nodes (node_t **list) {
+    node_t *tmp, *cur = *list;
 
     if (!cur) return;
 
@@ -60,7 +60,7 @@ void free_nodes (node_t** list) {
     *list = NULL;
 }
 
-void* append_node(node_t** list, node_t* entry) {
+void* append_node(node_t **list, node_t *entry) {
     node_t* prev, *cur;
 
     if (!list || !entry) return NULL;
@@ -75,8 +75,8 @@ void* append_node(node_t** list, node_t* entry) {
     return *list;
 }
 
-void dump_node(const node_t* list) {
-    const node_t* tmp = list;
+void dump_node(const node_t *list) {
+    const node_t *tmp = list;
     if (list) printf ("sz=%d\n", list->sz + 1);
     while (tmp) {
         if (tmp->func_dump) tmp->func_dump (tmp->data);
@@ -86,8 +86,8 @@ void dump_node(const node_t* list) {
     printf ("\n");
 }
 
-bool delete_first_node(node_t** list, node_t* entry, bool (*func)(const void* x, const void* y)) {
-    node_t* prev, *cur;
+bool delete_first_node(node_t **list, node_t *entry, bool (*func)(const void *x, const void *y)) {
+    node_t *prev, *cur;
     int sz;
 
     if (!list || !entry) return false;
@@ -121,20 +121,20 @@ bool delete_first_node(node_t** list, node_t* entry, bool (*func)(const void* x,
 }
 
 void free_my_data_t (void* dt) {
-    my_data_t* data = (my_data_t*) dt;
+    my_data_t *data = (my_data_t*) dt;
     free (data->y);
     free (data->str);
     free (data);
 }
 
 void dump_my_data_t (void* dt) {
-    my_data_t* data = (my_data_t*) dt;
+    my_data_t *data = (my_data_t*) dt;
     if (data) printf("<x=%d, y=%p(%d), str=%s> ", data->x, data->y, *(data->y), data->str);
 }
 
 bool cmp_my_data_t (const void* dt1, const void* dt2) {
-    const my_data_t* data1 = (my_data_t*) dt1;
-    const my_data_t* data2 = (my_data_t*) dt2;
+    const my_data_t *data1 = (my_data_t*) dt1;
+    const my_data_t *data2 = (my_data_t*) dt2;
     if (data1 && data2) {
         if (data1->x == data2->x && strcasecmp(data1->str, data2->str) == 0) return true;
     }
@@ -142,9 +142,9 @@ bool cmp_my_data_t (const void* dt1, const void* dt2) {
 }
 
 /*int main () {
-    node_t* a = calloc (1, sizeof (node_t));
-    node_t* b = calloc (1, sizeof (node_t));
-    node_t* c = calloc (1, sizeof (node_t));
+    node_t *a = calloc (1, sizeof (node_t));
+    node_t *b = calloc (1, sizeof (node_t));
+    node_t *c = calloc (1, sizeof (node_t));
 
     a->data = calloc (1, sizeof (my_data_t));
     a->func_del = free_my_data_t;

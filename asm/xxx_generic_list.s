@@ -89,6 +89,7 @@ search_first_node_dynamic:
 	testb	%al, %al
 	je	.L13
 	movq	-8(%rbp), %rax
+	movq	8(%rax), %rax
 	jmp	.L11
 .L13:
 	movq	-8(%rbp), %rax
