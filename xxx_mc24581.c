@@ -485,7 +485,7 @@ void recv_invite (invite_t* invite) {
     if (session) {
         printf ("invite on existing session %d", invite->session_idx);
         /* 3. implicit request */
-        if (invite->is_implicit_trans) {
+        if (invite->is_mc_implicit_rq) {
             participant_t *party;
             int x;
             printf ("from client?\n");
@@ -575,7 +575,7 @@ void eventFromSCU (void *m) {
         invite->is_initial = 1;
         invite->is_originating = 1;
         invite->is_mc_granted = 0;
-        invite->is_implicit_trans = 0;
+        invite->is_mc_implicit_rq = 0;
         invite->session_idx = 0;
         recv_invite (invite);
     }
@@ -598,7 +598,7 @@ void eventFromSCU (void *m) {
         invite->is_initial = 1;
         invite->is_originating = 1;
         invite->is_mc_granted = 0;
-        invite->is_implicit_trans = 1;
+        invite->is_mc_implicit_rq = 1;
         invite->session_idx = 0;
         recv_invite (invite);
     }

@@ -172,12 +172,12 @@ void* start_mdf_resource (int session_idx, int resource_idx);
 
 /* header for session & state transitions */
 typedef struct {
-    char* ssrc;
     int idx;
     int priority;
-    media_info_t media;
     int mdf_id;
     bool is_recv_only; /* <on-network-recvonly> entry */
+    char* ssrc;
+    media_info_t media;
     basic_state_t *basic_machine;
     basic_reception_state_t *reception_machine;
 } participant_t;
@@ -187,7 +187,7 @@ typedef struct {
     bool is_originating;
     bool is_mc_granted;
     bool is_mc_queueing;
-    bool is_implicit_trans;
+    bool is_mc_implicit_rq;
     int session_idx;
 } invite_t;
 
