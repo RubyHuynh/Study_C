@@ -51,7 +51,7 @@ static inline void err (const char* func, long line) {
 void* my_alloc (size_t sz) {
     void *rs = calloc (1, sz);
     assert (rs);
-    printf ("\t\t\talloc = %d %p\n", ++nb_allocated, rs);
+    printf ("\t\t\talloc = %d %p (sz=%d)\n", ++nb_allocated, rs, (int) sz);
     return rs;
 }
 
@@ -80,36 +80,36 @@ static char* dump_G_state (G_states state) {
     }
 }
 
-static char* dump_G_event (G_events event) {
+static char* dump_G_event (MCV_events event) {
     switch (event) {
-    case G_EVT_DEFAULT:
-        return "G_EVT_DEFAULT";
-    case G_EVT_MC_IMPLICIT:
-        return "G_EVT_MC_IMPLICIT";
-    case G_EVT_MC_GRANTED:
-        return "G_EVT_MC_GRANTED";
-    case G_EVT_NEW_PARTICIPANT:
-        return "G_EVT_NEW_PARTICIPANT";
-    case G_EVT_NO_PARTICIPANT:
-        return "G_EVT_NO_PARTICIPANT";
-    case G_EVT_TIMER_X_EXPIRE:
-        return "G_EVT_TIMER_X_EXPIRE";
-    case G_EVT_TIMER_Y_EXPIRE:
-        return "G_EVT_TIMER_Y_EXPIRE";
-    case G_EVT_TM_RQ:
-        return "G_EVT_TM_RQ";
-    case G_EVT_TM_PRIORITY_RQ:
-        return "G_EVT_TM_PRIORITY_RQ";
-    case G_EVT_TM_NO_PRIORITY_RQ:
-        return "G_EVT_TM_NO_PRIORITY_RQ";
-    case G_EVT_TM_END_RQ:
-        return "G_EVT_TM_END_RQ";
-    case G_EVT_CLIENT_RELEASE_1:
-        return "G_EVT_CLIENT_RELEASE_1";
-    case G_EVT_CLIENT_RELEASE_2:
-        return "G_EVT_CLIENT_RELEASE_2";
-    case G_EVT_RTP:
-        return "G_EVT_RTP";
+    case EVT_DEFAULT:
+        return "EVT_DEFAULT";
+    case EVT_MC_IMPLICIT:
+        return "EVT_MC_IMPLICIT";
+    case EVT_MC_GRANTED:
+        return "EVT_MC_GRANTED";
+    case EVT_NEW_PARTICIPANT:
+        return "EVT_NEW_PARTICIPANT";
+    case EVT_NO_PARTICIPANT:
+        return "EVT_NO_PARTICIPANT";
+    case EVT_TIMER_X_EXPIRE:
+        return "EVT_TIMER_X_EXPIRE";
+    case EVT_TIMER_Y_EXPIRE:
+        return "EVT_TIMER_Y_EXPIRE";
+    case EVT_TM_RQ:
+        return "EVT_TM_RQ";
+    case EVT_TM_PRIORITY_RQ:
+        return "EVT_TM_PRIORITY_RQ";
+    case EVT_TM_NO_PRIORITY_RQ:
+        return "EVT_TM_NO_PRIORITY_RQ";
+    case EVT_TM_END_RQ:
+        return "EVT_TM_END_RQ";
+    case EVT_CLIENT_RELEASE_1:
+        return "EVT_CLIENT_RELEASE_1";
+    case EVT_CLIENT_RELEASE_2:
+        return "EVT_CLIENT_RELEASE_2";
+    case EVT_RTP:
+        return "EVT_RTP";
     default:
         return "INVALID";
     }
@@ -163,12 +163,12 @@ void expire_timer (int type) {
 
         }
         else {
-            change_state (session, G_EVT_TIMER_X_EXPIRE); /*6.3.4.3.5*/
+            change_state (GENERAL_TRANSMISSION, session, EVT_TIMER_X_EXPIRE); /*6.3.4.3.5*/
         }
         break;
 
     case 2:
-        change_state (session, G_EVT_TIMER_Y_EXPIRE);
+        change_state (GENERAL_TRANSMISSION, session, EVT_TIMER_Y_EXPIRE);
         break;
 
         default:
@@ -251,13 +251,13 @@ void* recv_TM_request (void *data, ...) {
 
     if (session->participants->sz == 1 || 0 ) { /* or no any basic is allocated */
         /* 6.3.4.3.3 idle->idle (reject) */
-        change_state (session, G_EVT_TM_RQ, REJECT_EVT, party);
+        change_state (GENERAL_TRANSMISSION, session, EVT_TM_RQ, REJECT_EVT, party);
     }
     else {
         assert (session->incoming_invite);
-        if (session->cx == MAX_MC_CX) {
+        if (session->cx == MAX_MCV_CX) {
             if (0) { /* priority in TM request */
-                change_state (session, G_EVT_TM_PRIORITY_RQ, REJECT_EVT, party);
+                change_state (GENERAL_TRANSMISSION, session, EVT_TM_PRIORITY_RQ, REJECT_EVT, party);
             }
             else {
                 if (session ->incoming_invite->is_mc_queueing) {
@@ -267,7 +267,7 @@ void* recv_TM_request (void *data, ...) {
                 }
                 else {
                     /* 6.3.4.4.7A taken->taken (deny) */
-                    change_state (session, G_EVT_TM_RQ, REJECT_EVT, party);
+                    change_state (GENERAL_TRANSMISSION, session, EVT_TM_RQ, REJECT_EVT, party);
                 }
             }
         }
@@ -277,14 +277,14 @@ void* recv_TM_request (void *data, ...) {
                  /* 6.3.4.3.3 idle->idle (reject)
                     6.3.4.4.7A taken->taken (deny)
                  */
-                change_state (session, G_EVT_TM_RQ, REJECT_EVT, party);
+                change_state (GENERAL_TRANSMISSION, session, EVT_TM_RQ, REJECT_EVT, party);
             }
             else {
                 /* 6.3.4.3.3 idle->taken (grant)
                    6.3.4.4.7A taken->taken (grant)
                    6.3.4.4.8 taken->taken (grant)
                  */
-                change_state (session, G_EVT_TM_RQ, ACCEPT_EVT, party);
+                change_state (GENERAL_TRANSMISSION, session, EVT_TM_RQ, ACCEPT_EVT, party);
             }
         }
     }
@@ -323,11 +323,11 @@ void* send_grant(void *data, ...) {
     assert (session);
     if (1) stop_timer (1);
     if (2) stop_timer (2);
-    if (session->cx < MAX_MC_CX) ++session->cx;
+    if (session->cx < MAX_MCV_CX) ++session->cx;
     start_timer(4);
     send_TM_grant (session);
     send_TM_media_notify (session);
-    session->reception_machine = my_alloc (sizeof (general_reception_state_t));
+    session->reception_machine = my_alloc (sizeof (mcv_state_t));
     return NULL;
 }
 
@@ -398,53 +398,64 @@ void* transit_state (void *data, ...) {
     return NULL;
 }
 
-void set_next_state (session_t *session, G_states next_state, G_events event) {
-    assert (session);
+void set_next_state (mcv_state_t *session_sm, G_states next_state, MCV_events event) {
+    assert (session_sm);
 
-    session->general_machine.prev_state = session->general_machine.state;
-    if (session->general_machine.state != next_state) {
-        printf ("G_state changes from %s to %s, prev_state %s\n", dump_G_state (session->general_machine.state), dump_G_state (next_state), dump_G_state (session->general_machine.prev_state));
-        session->general_machine.state = next_state;
-        session->general_machine.event = event;
+    session_sm->prev_state = session_sm->state;
+    if (session_sm->state != next_state) {
+        printf ("G_state changes from %s to %s, prev_state %s\n", dump_G_state (session_sm->state), dump_G_state (next_state), dump_G_state (session_sm->prev_state));
+        session_sm->state = next_state;
+        session_sm->event = event;
     }
     else {
-        printf ("G_state remains at %s, prev_state %s \n", dump_G_state (next_state), dump_G_state (session->general_machine.prev_state));
+        printf ("G_state remains at %s, prev_state %s \n", dump_G_state (next_state), dump_G_state (session_sm->prev_state));
     }
 }
 
-void* change_state (void* sess, G_events event, ...) {
-    session_t *session = (session_t*) sess;
-    G_states next_state;
+void get_state_action (sm_t (*matrix)[MAX_MCV_EVENT], mcv_state_t *session_sm, MCV_events event, bool is_evt_reject, session_t *session, void *data2) {
+    int next_state;
+
+    if (is_evt_reject == 1) {
+        FF
+        next_state = matrix[session_sm->state][event].reject_state;
+        set_next_state (session_sm, next_state, event);
+        if (matrix[session_sm->prev_state][event].reject_func)
+            matrix[session_sm->prev_state][event].reject_func (session, data2);
+        else
+            printf ("empty reject action\n");
+    }
+    else {  /* default change state is this */
+        FF
+        next_state = matrix[session_sm->state][event].accept_state;
+        set_next_state (session_sm, next_state, event);
+        if (matrix[session_sm->prev_state][event].accept_func)
+            matrix[session_sm->prev_state][event].accept_func (session, data2);
+        else
+            printf ("empty accept action\n");
+    }
+}
+
+void* change_state (SM_types sm_type, session_t* session, MCV_events event, ...) {
+    int next_state;
 
     assert (session);
 
     READ_VARIADIC(event)
 
     printf ("%s current_state=%s, event = %s, reject = %d\n", __FUNCTION__, dump_G_state(session->general_machine.state), dump_G_event(event), data1);
-    if (event != G_EVT_INVALID ) {
-        if (data1 == 1) {
-            FF
-            next_state = state_matrix[session->general_machine.state][event].reject_state;
-            set_next_state (session, next_state, event);
-            if (state_matrix[session->general_machine.prev_state][event].reject_func)
-                state_matrix[session->general_machine.prev_state][event].reject_func (session, data2);
-            else
-                printf ("empty reject action\n");
-        }
-        else {  /* default change state is this */
-            FF
-            next_state = state_matrix[session->general_machine.state][event].accept_state;
-            set_next_state (session, next_state, event);
-            if (state_matrix[session->general_machine.prev_state][event].accept_func)
-                state_matrix[session->general_machine.prev_state][event].accept_func (session, data2);
-            else
-                printf ("empty accept action\n");
-        }
+    switch (sm_type) {
+        case GENERAL_TRANSMISSION:
+            get_state_action(state_matrix, &session->general_machine, event, data1, session, data2);
+        case BASIC_TRANSMISSION:
+            get_state_action(basic_state_matrix, ((participant_t*)(session->participants->data))->basic_machine, event, data1, session, data2);
+            break;
+        case GENERAL_RECEPTION:
+            get_state_action(reception_state_matrix, session->reception_machine, event, data1, session, data2);
+            break;
+        case BASIC_RECEPTION:
+            get_state_action(basic_reception_state_matrix, ((participant_t*)(session->participants->data))->reception_machine, event, data1, session, data2);
+            break;
     }
-    else {
-        err (__FUNCTION__, __LINE__);
-    }
-
     return NULL;
 }
 
@@ -492,9 +503,9 @@ void recv_invite (invite_t* invite) {
             scanf ("%d", &x);
 
             if (session->participants->sz == 1 || 0)
-                change_state (session, G_EVT_MC_IMPLICIT, REJECT_EVT);
+                change_state (GENERAL_TRANSMISSION, session, EVT_MC_IMPLICIT, REJECT_EVT);
             else
-                change_state (session, G_EVT_MC_IMPLICIT, session->participants->data);
+                change_state (GENERAL_TRANSMISSION, session, EVT_MC_IMPLICIT, session->participants->data);
             return;
         }
     }
@@ -518,18 +529,18 @@ void recv_invite (invite_t* invite) {
     /*2. change state on event lvl_1 */
     if (invite->is_mc_granted) {
         FF
-        change_state (session, G_EVT_MC_GRANTED);
+        change_state (GENERAL_TRANSMISSION, session, EVT_MC_GRANTED);
     }
     else {
         if (configuration.is_granting_implicit_on_established) {
             /*participant_t caller;
             caller.idx = 0;
-            change_state (session, G_EVT_MC_IMPLICIT, ACCEPT_EVT, &caller);*/
+            change_state (GENERAL_TRANSMISSION, session, EVT_MC_IMPLICIT, ACCEPT_EVT, &caller);*/
             FF
         }
         else {
             FF
-            change_state (session, G_EVT_MC_IMPLICIT, REJECT_EVT);
+            change_state (GENERAL_TRANSMISSION, session, EVT_MC_IMPLICIT, REJECT_EVT);
         }
     }
 }
@@ -542,22 +553,26 @@ void recv_200 (int session_idx, int callee_idx) {
 
     if (configuration.is_confirmed_indication) {
         if (check_G_state (session, G_RESERVED)) {
-            set_next_state (session, G_START_STOP, G_EVT_DEFAULT);
+            set_next_state (&session->general_machine, G_START_STOP, EVT_DEFAULT);
         }
     }
     /* create basic state, need check direction? */
     if ((callee = (participant_t*) search_first_node_dynamic (session->participants, &callee_idx, search_callee_by_idx))) {
         printf (" 200 OK on exisiting participant, basic = %p", callee->basic_machine);
         callee->ssrc = "some_ssrc";
-        if (!callee->basic_machine)
-            callee->basic_machine = my_alloc (sizeof (basic_state_t));
+        if (!callee->basic_machine) {
+            callee->basic_machine = my_alloc (sizeof (mcv_state_t));
+            if (session->incoming_invite->is_mc_implicit_rq) {
+                change_state (GENERAL_TRANSMISSION, session, EVT_MC_IMPLICIT, ACCEPT_EVT, callee);
+            }
+        }
     }
     else {
         printf ("200 on no participant, invalid case, discard \n");
     }
 
     if (configuration.is_granting_implicit_on_established) {
-        change_state (session, G_EVT_MC_IMPLICIT, ACCEPT_EVT, callee);
+        change_state (GENERAL_TRANSMISSION, session, EVT_MC_IMPLICIT, ACCEPT_EVT, callee);
     }
 
     return;
@@ -612,7 +627,7 @@ void eventFromSCU (void *m) {
 
         assert (session);
         session = all_sessions[x];
-        change_state (session, G_EVT_CLIENT_RELEASE_1);
+        change_state (GENERAL_TRANSMISSION, session, EVT_CLIENT_RELEASE_1);
     }
     break;
     case 4:
@@ -624,7 +639,7 @@ void eventFromSCU (void *m) {
 
         assert (session);
         session = all_sessions[x];
-        change_state (session, G_EVT_CLIENT_RELEASE_2);
+        change_state (GENERAL_TRANSMISSION, session, EVT_CLIENT_RELEASE_2);
     }
     break;
     default:
@@ -652,7 +667,7 @@ void eventMDF (void* m) {
         if (session->cx == 0) /* temo */
             printf ("invalid RTP? -- case never happen");
         else
-            change_state (session, G_EVT_RTP);
+            change_state (GENERAL_TRANSMISSION, session, EVT_RTP);
     }
     break;
     default:
@@ -685,10 +700,10 @@ void eventRTCP (void* m) {
         --session->cx;
         send_TM_end_resp (session);
         mdf_to_do_sth (session);
-        if (session->cx <= MIN_MC_CX)
-            change_state (session, G_EVT_TM_END_RQ, REJECT_EVT, party);
+        if (session->cx <= MIN_MCV_CX)
+            change_state (GENERAL_TRANSMISSION, session, EVT_TM_END_RQ, REJECT_EVT, party);
         else
-            change_state (session, G_EVT_TM_END_RQ);
+            change_state (GENERAL_TRANSMISSION, session, EVT_TM_END_RQ);
     }
     break;
 
