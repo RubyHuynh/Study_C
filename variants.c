@@ -5,6 +5,24 @@
 #include<string.h>
 
 
+char* math(int d) {
+	int len = 0, i = 0;
+	char* s = NULL;
+	
+	len = (d > 64 && d%2) ? floor(log2(d)) + 2 : floor(log2(d)) +1;
+	printf("\n\t %d --> %d --> ", d, len);
+	s = calloc(1, len+1);
+	s[0] = '0';
+	while(d) {
+		printf("\tidx %d", len);
+		s[--len] = d%2 ? '1' : '0';
+		d /= 2;
+	}
+	printf("\t\ngot %s\n", s);
+	return s;
+}
+
+
 void variants(int k) {
 	char** rs = calloc(1, pow(2,k) * sizeof(char*));
 	int i = 0;
@@ -217,5 +235,12 @@ int main() {
 	else {
 		printf("KO\n");
 	}
+
+	printf("====================\n");
+	math(10);
+	math(5);
+	math(15);
+	math(128);
+	math(8);
 	return 0;
 }
